@@ -1,9 +1,11 @@
-import {Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger} from '../components/dialog'
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../components/dialog'
 import { Button } from '../components/button';
 import { Label } from '../components/label';
 import { Input } from '../components/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/select';
 import { Textarea } from '../components/textarea';
+import { Plus } from 'lucide-react';
+import { useState } from 'react';
 interface Event {
     id: string;
     title: string;
@@ -18,6 +20,72 @@ interface Event {
 }
 
 const Calendar = () => {
+    const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [events, setEvents] = useState<Event[]>([
+      {
+        id: '1',
+        title: 'Daily Standup',
+        description: 'Team sync meeting',
+        date: new Date(),
+        time: '09:00 AM',
+        duration: 30,
+        type: 'meeting',
+        location: 'Conference Room A',
+        attendees: ['John', 'Sarah', 'Mike'],
+        aiSuggested: false
+      },
+      {
+        id: '2',
+        title: 'Focus Session: Deep Work',
+        description: 'Concentrated work time for project proposal',
+        date: new Date(),
+        time: '10:30 AM',
+        duration: 90,
+        type: 'focus',
+        aiSuggested: true
+      },
+      {
+        id: '3',
+        title: 'Project Review',
+        description: 'Review Q1 project deliverables',
+        date: new Date(),
+        time: '02:00 PM',
+        duration: 60,
+        type: 'meeting',
+        location: 'Virtual - Google Meet',
+        attendees: ['Team Lead', 'Product Manager']
+      }
+    ]);
+
+    const [newEvent, setNewEvent] = useState({
+        title: '',
+        description: '',
+        time: '',
+        duration: 60,
+        type: 'meeting' as const,
+        location: ''
+    });
+
+    const addEvent = () => {
+        const event: Event = {
+          id: Date.now().toString(),
+          ...newEvent,
+          date: selectedDate || new Date(),
+          attendees: []
+        };
+        setEvents([...events, event]);
+        setNewEvent({
+          title: '',
+          description: '',
+          time: '',
+          duration: 60,
+          type: 'meeting',
+          location: ''
+        });
+        setIsDialogOpen(false);
+      };
+
     return (
         <>
             <div className="flex items-center justify-between mb-8">
