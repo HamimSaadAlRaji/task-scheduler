@@ -1,5 +1,6 @@
 import {Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger} from '../components/dialog'
 import { Button } from '../components/button';
+import { Label } from '../components/label';
 interface Event {
     id: string;
     title: string;
