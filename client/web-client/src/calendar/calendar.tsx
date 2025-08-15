@@ -1,6 +1,8 @@
-import {Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger} from '../components/dialog'
+import {Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger} from '../components/dialog'
 import { Button } from '../components/button';
 import { Label } from '../components/label';
+import { Input } from '../components/input';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '../components/select';
 interface Event {
     id: string;
     title: string;
