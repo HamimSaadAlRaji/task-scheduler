@@ -2,7 +2,8 @@ import {Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, Dia
 import { Button } from '../components/button';
 import { Label } from '../components/label';
 import { Input } from '../components/input';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '../components/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/select';
+import { Textarea } from '../components/textarea';
 interface Event {
     id: string;
     title: string;
