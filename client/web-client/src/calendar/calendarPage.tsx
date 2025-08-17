@@ -2,9 +2,11 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, Di
 import { Button } from '../components/button';
 import { Label } from '../components/label';
 import { Input } from '../components/input';
+import { Badge } from '../components/badge';
+import { format } from 'date-fns';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/select';
 import { Textarea } from '../components/textarea';
-import { Plus, Brain, Users, Video } from 'lucide-react';
+import { Plus, Brain, Users, Video, Clock, MapPin, Bell, CalendarIcon } from 'lucide-react';
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/card';
 import { Calendar } from '../components/calendar';
@@ -60,6 +62,14 @@ const CalendarPage = () => {
         }
     ]);
 
+    const typeColors = {
+        meeting: 'bg-blue-500',
+        focus: 'bg-purple-500',
+        break: 'bg-orange-500',
+        personal: 'bg-green-500'
+    };
+
+
     const [newEvent, setNewEvent] = useState({
         title: '',
         description: '',
@@ -87,6 +97,10 @@ const CalendarPage = () => {
         });
         setIsDialogOpen(false);
     };
+
+    const todaysEvents = events.filter(event =>
+        event.date.toDateString() === (selectedDate || new Date()).toDateString()
+    );
 
     return (
         <>
@@ -217,7 +231,115 @@ const CalendarPage = () => {
                             </div>
                         </CardContent>
                     </Card>
+
+                    {/* Events List */}
+                    <Card className="lg:col-span-2">
+                        <CardHeader>
+                            <CardTitle>
+                                Events for {selectedDate ? format(selectedDate, 'MMMM dd, yyyy') : 'Today'}
+                            </CardTitle>
+                            <CardDescription>
+                                Your scheduled events and activities
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-4">
+                                {todaysEvents.length === 0 ? (
+                                    <div className="text-center py-8">
+                                        <CalendarIcon className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                                        <p className="text-gray-600 dark:text-gray-400">No events scheduled for this day</p>
+                                        <Button variant="outline" className="mt-4" onClick={() => setIsDialogOpen(true)}>
+                                            <Plus className="w-4 h-4 mr-2" />
+                                            Add Event
+                                        </Button>
+                                    </div>
+                                ) : (
+                                    todaysEvents.map((event) => (
+                                        <div key={event.id} className="flex items-start space-x-4 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                                            <div className={`w-3 h-3 rounded-full ${typeColors[event.type]} mt-2`} />
+                                            <div className="flex-1">
+                                                <div className="flex items-center space-x-2 mb-1">
+                                                    <h3 className="font-medium">{event.title}</h3>
+                                                    {event.aiSuggested && (
+                                                        <Badge variant="outline" className="text-xs">
+                                                            <Brain className="w-3 h-3 mr-1" />
+                                                            AI
+                                                        </Badge>
+                                                    )}
+                                                    <Badge variant="outline" className="text-xs capitalize">
+                                                        {event.type}
+                                                    </Badge>
+                                                </div>
+                                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{event.description}</p>
+                                                <div className="flex items-center space-x-4 text-sm text-gray-500">
+                                                    <div className="flex items-center">
+                                                        <Clock className="w-4 h-4 mr-1" />
+                                                        {event.time} ({event.duration} min)
+                                                    </div>
+                                                    {event.location && (
+                                                        <div className="flex items-center">
+                                                            <MapPin className="w-4 h-4 mr-1" />
+                                                            {event.location}
+                                                        </div>
+                                                    )}
+                                                    {event.attendees && event.attendees.length > 0 && (
+                                                        <div className="flex items-center">
+                                                            <Users className="w-4 h-4 mr-1" />
+                                                            {event.attendees.length} attendees
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <div className="flex space-x-2">
+                                                <Button size="sm" variant="outline">
+                                                    <Bell className="w-4 h-4" />
+                                                </Button>
+                                                <Button size="sm" variant="outline">
+                                                    <Video className="w-4 h-4" />
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
                 </div>
+
+                {/* AI Suggestions */}
+                <Card className="mt-6">
+                    <CardHeader>
+                        <CardTitle className="flex items-center">
+                            <Brain className="w-5 h-5 mr-2" />
+                            AI Schedule Insights
+                        </CardTitle>
+                        <CardDescription>
+                            Intelligent recommendations for your calendar
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                                <h3 className="font-medium text-blue-900 dark:text-blue-100">Optimal Meeting Time</h3>
+                                <p className="text-sm text-blue-800 dark:text-blue-200 mt-1">
+                                    Tuesday 2-4 PM works best for all team members based on their availability patterns.
+                                </p>
+                            </div>
+                            <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                                <h3 className="font-medium text-purple-900 dark:text-purple-100">Focus Block Suggestion</h3>
+                                <p className="text-sm text-purple-800 dark:text-purple-200 mt-1">
+                                    Schedule a 2-hour focus block tomorrow morning when your productivity typically peaks.
+                                </p>
+                            </div>
+                            <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                                <h3 className="font-medium text-green-900 dark:text-green-100">Break Reminder</h3>
+                                <p className="text-sm text-green-800 dark:text-green-200 mt-1">
+                                    You have 4 consecutive meetings. Consider adding a 15-minute break between them.
+                                </p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
         </>
     )
