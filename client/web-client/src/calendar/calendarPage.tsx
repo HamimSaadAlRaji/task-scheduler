@@ -305,6 +305,41 @@ const CalendarPage = () => {
                         </CardContent>
                     </Card>
                 </div>
+
+                {/* AI Suggestions */}
+                <Card className="mt-6">
+                    <CardHeader>
+                        <CardTitle className="flex items-center">
+                            <Brain className="w-5 h-5 mr-2" />
+                            AI Schedule Insights
+                        </CardTitle>
+                        <CardDescription>
+                            Intelligent recommendations for your calendar
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                                <h3 className="font-medium text-blue-900 dark:text-blue-100">Optimal Meeting Time</h3>
+                                <p className="text-sm text-blue-800 dark:text-blue-200 mt-1">
+                                    Tuesday 2-4 PM works best for all team members based on their availability patterns.
+                                </p>
+                            </div>
+                            <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                                <h3 className="font-medium text-purple-900 dark:text-purple-100">Focus Block Suggestion</h3>
+                                <p className="text-sm text-purple-800 dark:text-purple-200 mt-1">
+                                    Schedule a 2-hour focus block tomorrow morning when your productivity typically peaks.
+                                </p>
+                            </div>
+                            <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                                <h3 className="font-medium text-green-900 dark:text-green-100">Break Reminder</h3>
+                                <p className="text-sm text-green-800 dark:text-green-200 mt-1">
+                                    You have 4 consecutive meetings. Consider adding a 15-minute break between them.
+                                </p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
         </>
     )
