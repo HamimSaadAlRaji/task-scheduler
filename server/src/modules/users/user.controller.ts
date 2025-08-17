@@ -45,3 +45,18 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     .json({ message: "Login successful" });
   return;
 };
+export const logoutUser = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
+    res.clearCookie("accessToken", options);
+    res.status(200).json({ message: "Logout successful" });
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+};
