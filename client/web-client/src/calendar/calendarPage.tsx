@@ -2,9 +2,11 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, Di
 import { Button } from '../components/button';
 import { Label } from '../components/label';
 import { Input } from '../components/input';
+import { Badge } from '../components/badge';
+import { format } from 'date-fns';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/select';
 import { Textarea } from '../components/textarea';
-import { Plus, Brain, Users, Video, Badge, Clock, MapPin, Bell, CalendarIcon } from 'lucide-react';
+import { Plus, Brain, Users, Video, Clock, MapPin, Bell, CalendarIcon } from 'lucide-react';
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/card';
 import { Calendar } from '../components/calendar';
@@ -60,6 +62,14 @@ const CalendarPage = () => {
         }
     ]);
 
+    const typeColors = {
+        meeting: 'bg-blue-500',
+        focus: 'bg-purple-500',
+        break: 'bg-orange-500',
+        personal: 'bg-green-500'
+    };
+
+
     const [newEvent, setNewEvent] = useState({
         title: '',
         description: '',
@@ -88,9 +98,9 @@ const CalendarPage = () => {
         setIsDialogOpen(false);
     };
 
-    const todaysEvents = events.filter(event => 
+    const todaysEvents = events.filter(event =>
         event.date.toDateString() === (selectedDate || new Date()).toDateString()
-      );
+    );
 
     return (
         <>
