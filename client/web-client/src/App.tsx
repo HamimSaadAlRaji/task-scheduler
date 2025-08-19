@@ -1,16 +1,16 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Outlet } from "react-router";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
 
 function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      
-    </>
-  )
+    return (
+        <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset>
+                <Outlet />
+            </SidebarInset>
+        </SidebarProvider>
+    );
 }
 
-export default App
+export default App;
