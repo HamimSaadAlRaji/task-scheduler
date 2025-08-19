@@ -10,7 +10,7 @@ import {
     SidebarRail,
     SidebarTrigger,
     useSidebar,
-} from "./ui/sidebar";
+} from "@/components/ui/sidebar";
 import {
     BrainCircuitIcon,
     CalendarIcon,
