@@ -35,7 +35,6 @@ import {
 import {
     PlusIcon,
     CalendarIcon,
-    BrainIcon,
     Trash2Icon,
     CheckCircleIcon,
 } from "lucide-react";
@@ -49,7 +48,6 @@ interface Task {
     status: "pending" | "in-progress" | "completed";
     dueDate: Date;
     category: string;
-    aiSuggested?: boolean;
 }
 
 export default function TasksPage() {
@@ -62,7 +60,6 @@ export default function TasksPage() {
             status: "in-progress",
             dueDate: new Date("2025-01-15"),
             category: "Work",
-            aiSuggested: true,
         },
         {
             id: "2",
@@ -118,14 +115,8 @@ export default function TasksPage() {
         low: "bg-green-500",
     };
 
-    const statusColors = {
-        pending: "bg-gray-500",
-        "in-progress": "bg-blue-500",
-        completed: "bg-green-500",
-    };
-
     return (
-        <div>
+        <div className="p-10">
             <div className="flex items-center justify-between mb-8">
                 <div>
                     <h1 className="text-3xl font-bold">Task Management</h1>
@@ -278,15 +269,6 @@ export default function TasksPage() {
                                     <div className="flex items-start justify-between">
                                         <h3 className="font-medium flex items-center">
                                             {task.title}
-                                            {task.aiSuggested && (
-                                                <Badge
-                                                    variant="outline"
-                                                    className="ml-2 text-xs"
-                                                >
-                                                    <BrainIcon className="w-3 h-3 mr-1" />
-                                                    AI
-                                                </Badge>
-                                            )}
                                         </h3>
                                         <div
                                             className={`w-3 h-3 rounded-full ${
@@ -356,15 +338,6 @@ export default function TasksPage() {
                                     <div className="flex items-start justify-between">
                                         <h3 className="font-medium flex items-center">
                                             {task.title}
-                                            {task.aiSuggested && (
-                                                <Badge
-                                                    variant="outline"
-                                                    className="ml-2 text-xs"
-                                                >
-                                                    <BrainIcon className="w-3 h-3 mr-1" />
-                                                    AI
-                                                </Badge>
-                                            )}
                                         </h3>
                                         <div
                                             className={`w-3 h-3 rounded-full ${
@@ -435,15 +408,6 @@ export default function TasksPage() {
                                     <div className="flex items-start justify-between">
                                         <h3 className="font-medium flex items-center line-through text-gray-600 dark:text-gray-400">
                                             {task.title}
-                                            {task.aiSuggested && (
-                                                <Badge
-                                                    variant="outline"
-                                                    className="ml-2 text-xs"
-                                                >
-                                                    <BrainIcon className="w-3 h-3 mr-1" />
-                                                    AI
-                                                </Badge>
-                                            )}
                                         </h3>
                                         <CheckCircleIcon className="w-4 h-4 text-green-500" />
                                     </div>
