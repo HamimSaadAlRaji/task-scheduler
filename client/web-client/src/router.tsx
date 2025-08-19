@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router";
 import App from "@/App";
-import TaskPage from "@/pages/tasks-page";
+import TasksPage from "@/pages/tasks-page";
 import HomePage from "@/pages/home-page";
 import CalendarPage from "@/pages/calendar-page";
 
@@ -15,7 +15,7 @@ export const appRouter = createBrowserRouter([
             },
             {
                 path: "/tasks",
-                element: <TaskPage />,
+                element: <TasksPage />,
             },
             {
                 path: "/calendar",
