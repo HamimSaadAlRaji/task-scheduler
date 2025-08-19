@@ -15,6 +15,7 @@ import {
     BrainCircuitIcon,
     CalendarIcon,
     ChevronsUpDownIcon,
+    HomeIcon,
     SquareCheckBigIcon,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -22,6 +23,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 export function AppSidebar() {
     const { open } = useSidebar();
     const items = [
+        {
+            title: "Home",
+            url: "/",
+            icon: HomeIcon,
+        },
         {
             title: "Tasks",
             url: "/tasks",
