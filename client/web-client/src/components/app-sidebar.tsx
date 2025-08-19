@@ -62,7 +62,7 @@ export function AppSidebar() {
                 )}
             </SidebarHeader>
 
-            <SidebarContent className="mt-4 ml-2">
+            <SidebarContent className="mt-4 mx-2">
                 <SidebarMenu>
                     {items.map((item) => (
                         <SidebarMenuItem key={item.url}>
