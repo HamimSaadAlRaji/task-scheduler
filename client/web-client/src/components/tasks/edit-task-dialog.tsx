@@ -34,12 +34,13 @@ import {
 } from "@/components/ui/popover";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, PlusIcon } from "lucide-react";
+import { CalendarIcon, EditIcon } from "lucide-react";
 import { format } from "date-fns";
 import { axiosInstance } from "@/lib/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { Task } from "@/lib/types";
 
-export default function AddTaskDialog() {
+export default function EditTaskDialog({ task }: { task: Task }) {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     const formSchema = z.object({
@@ -50,10 +51,10 @@ export default function AddTaskDialog() {
     });
 
     const defaultValues = {
-        title: "",
-        description: "",
-        priority: "medium" as const,
-        dueDate: new Date(),
+        title: task.title,
+        description: task.description,
+        priority: task.priority,
+        dueDate: new Date(task.dueDate),
     };
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -61,17 +62,17 @@ export default function AddTaskDialog() {
         defaultValues,
     });
 
-    const addTask = async (task: z.infer<typeof formSchema>) => {
-        return await axiosInstance.post("/tasks", task);
+    const updateTask = async (values: z.infer<typeof formSchema>) => {
+        return await axiosInstance.put("/tasks/" + task._id, values);
     };
 
     const queryClient = useQueryClient();
 
     const { mutateAsync } = useMutation({
-        mutationFn: addTask,
+        mutationFn: updateTask,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["tasks"] });
-            form.reset(defaultValues);
+            // form.reset({});
             setIsDialogOpen(false);
         },
         onError: (error) => {
@@ -82,16 +83,15 @@ export default function AddTaskDialog() {
     return (
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-                <Button className="bg-sidebar-accent hover:bg-blue-500 transition-colors duration-200">
-                    <PlusIcon className="w-4 h-4 mr-2" />
-                    Add New Task
+                <Button size="sm" variant="outline">
+                    <EditIcon className="w-4 h-4" />
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>Add New Task</DialogTitle>
+                    <DialogTitle>Edit Task</DialogTitle>
                     <DialogDescription>
-                        Add a new task to your workflow
+                        Update the the task details
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
@@ -217,7 +217,7 @@ export default function AddTaskDialog() {
                             disabled={form.formState.isSubmitting}
                             className="w-full bg-sidebar-accent hover:bg-blue-500 transition-colors duration-200"
                         >
-                            Add Task
+                            Save Changes
                         </Button>
                     </form>
                 </Form>

@@ -7,12 +7,12 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import type { Task } from "@/lib/types";
-import { EditIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "@/lib/utils";
 import DeleteTaskDialog from "./delete-task-dialog";
+import EditTaskDialog from "./edit-task-dialog";
 
 export default function TaskCard({ task }: { task: Task }) {
     const priorityColors = {
@@ -68,11 +68,13 @@ export default function TaskCard({ task }: { task: Task }) {
             </CardHeader>
             <CardContent className="space-y-2">
                 <CardDescription
-                    className={`text-sm text-gray-600 dark:text-gray-400${
+                    className={`min-h-10 text-sm text-gray-600 dark:text-gray-400${
                         isDone ? " line-through" : ""
-                    }`}
+                    } break-words whitespace-pre-line`}
                 >
-                    {task.description}
+                    {task.description.length > 125
+                        ? `${task.description.slice(0, 125)} ...`
+                        : task.description}
                 </CardDescription>
                 <div className="flex items-center justify-between">
                     <span className="text-xs text-gray-500">
@@ -87,9 +89,7 @@ export default function TaskCard({ task }: { task: Task }) {
                     >
                         {isDone ? "Mark As To Do" : "Mark As Done"}
                     </Button>
-                    <Button size="sm" variant="outline">
-                        <EditIcon className="w-4 h-4" />
-                    </Button>
+                    <EditTaskDialog task={task} />
                     <DeleteTaskDialog taskId={task._id} />
                 </div>
             </CardContent>
