@@ -7,9 +7,12 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import type { Task } from "@/lib/types";
-import { EditIcon, Trash2Icon } from "lucide-react";
+import { EditIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { axiosInstance } from "@/lib/utils";
+import DeleteTaskDialog from "./delete-task-dialog";
 
 export default function TaskCard({ task }: { task: Task }) {
     const priorityColors = {
@@ -18,6 +21,23 @@ export default function TaskCard({ task }: { task: Task }) {
         low: "text-green-600 bg-green-100",
     };
     const isDone = task.status === "completed";
+
+    async function updateStatus() {
+        return await axiosInstance.put("/tasks/" + task._id, {
+            status: isDone ? "todo" : "completed",
+        });
+    }
+    const queryClient = useQueryClient();
+    const { mutateAsync } = useMutation({
+        mutationFn: updateStatus,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["tasks"] });
+        },
+        onError: (error) => {
+            console.log(error);
+        },
+    });
+
     return (
         <Card
             key={task._id}
@@ -63,15 +83,14 @@ export default function TaskCard({ task }: { task: Task }) {
                     <Button
                         size="sm"
                         className="flex-1 text-white bg-blue-600 hover:bg-blue-500 transition-colors duration-200"
+                        onClick={() => mutateAsync()}
                     >
                         {isDone ? "Mark As To Do" : "Mark As Done"}
                     </Button>
                     <Button size="sm" variant="outline">
                         <EditIcon className="w-4 h-4" />
                     </Button>
-                    <Button size="sm" variant="outline">
-                        <Trash2Icon className="w-4 h-4" />
-                    </Button>
+                    <DeleteTaskDialog taskId={task._id} />
                 </div>
             </CardContent>
         </Card>
