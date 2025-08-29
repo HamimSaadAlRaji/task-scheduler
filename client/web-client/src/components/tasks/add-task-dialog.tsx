@@ -1,5 +1,7 @@
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
     Dialog,
@@ -9,6 +11,14 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form";
 import {
     Select,
     SelectContent,
@@ -32,15 +42,26 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 export default function AddTaskDialog() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-    const defaultTask = {
+    const formSchema = z.object({
+        title: z.string().min(1, { message: "Title is required" }),
+        description: z.string().optional(),
+        priority: z.enum(["low", "medium", "high"]),
+        dueDate: z.date(),
+    });
+
+    const defaultValues = {
         title: "",
         description: "",
         priority: "medium" as const,
         dueDate: new Date(),
     };
-    const [task, setTask] = useState(defaultTask);
 
-    const addTask = async () => {
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues,
+    });
+
+    const addTask = async (task: z.infer<typeof formSchema>) => {
         return await axiosInstance.post("/tasks", task);
     };
 
@@ -50,8 +71,8 @@ export default function AddTaskDialog() {
         mutationFn: addTask,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["tasks"] });
+            form.reset(defaultValues);
             setIsDialogOpen(false);
-            setTask(defaultTask);
         },
         onError: (error) => {
             console.error("Error adding task:", error);
@@ -73,104 +94,131 @@ export default function AddTaskDialog() {
                         Add a new task to your workflow
                     </DialogDescription>
                 </DialogHeader>
-                <div className="space-y-4">
-                    <div>
-                        <Label className="mb-2" htmlFor="title">
-                            Title
-                        </Label>
-                        <Input
-                            id="title"
-                            value={task.title}
-                            onChange={(e) =>
-                                setTask({
-                                    ...task,
-                                    title: e.target.value,
-                                })
-                            }
-                            placeholder="Enter task title"
-                        />
-                    </div>
-                    <div>
-                        <Label className="mb-2" htmlFor="description">
-                            Description
-                        </Label>
-                        <Textarea
-                            id="description"
-                            value={task.description}
-                            onChange={(e) =>
-                                setTask({
-                                    ...task,
-                                    description: e.target.value,
-                                })
-                            }
-                            placeholder="Enter task description"
-                        />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <Label className="mb-2">Due Date</Label>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button
-                                        variant="outline"
-                                        className="w-full justify-start text-left"
-                                    >
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {format(task.dueDate, "PPP")}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0">
-                                    <Calendar
-                                        mode="single"
-                                        selected={task.dueDate}
-                                        onSelect={(date) =>
-                                            date &&
-                                            setTask({
-                                                ...task,
-                                                dueDate: date,
-                                            })
-                                        }
-                                        initialFocus
-                                    />
-                                </PopoverContent>
-                            </Popover>
-                        </div>
-                        <div>
-                            <Label className="mb-2" htmlFor="priority">
-                                Priority
-                            </Label>
-                            <Select
-                                value={task.priority}
-                                onValueChange={(value: any) =>
-                                    setTask({
-                                        ...task,
-                                        priority: value,
-                                    })
-                                }
-                            >
-                                <SelectTrigger className="w-full">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="low">Low</SelectItem>
-                                    <SelectItem value="medium">
-                                        Medium
-                                    </SelectItem>
-                                    <SelectItem value="high">High</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-                    <Button
-                        onClick={(e) => {
-                            e.preventDefault();
-                            mutateAsync();
-                        }}
-                        className="w-full bg-sidebar-accent hover:bg-blue-500 transition-colors duration-200"
+                <Form {...form}>
+                    <form
+                        onSubmit={form.handleSubmit((values) =>
+                            mutateAsync(values)
+                        )}
                     >
-                        Add Task
-                    </Button>
-                </div>
+                        <FormField
+                            control={form.control}
+                            name="title"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Title</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            placeholder="Enter task title"
+                                        />
+                                    </FormControl>
+                                    <div className="min-h-[20px]">
+                                        <FormMessage />
+                                    </div>
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="description"
+                            render={({ field }) => (
+                                <FormItem className="mt-2">
+                                    <FormLabel>Description</FormLabel>
+                                    <FormControl>
+                                        <Textarea
+                                            {...field}
+                                            placeholder="Enter task description"
+                                        />
+                                    </FormControl>
+                                    <div className="min-h-[20px]">
+                                        <FormMessage />
+                                    </div>
+                                </FormItem>
+                            )}
+                        />
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                                control={form.control}
+                                name="dueDate"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Due Date</FormLabel>
+                                        <FormControl>
+                                            <Popover>
+                                                <PopoverTrigger asChild>
+                                                    <Button
+                                                        variant="outline"
+                                                        className="w-full justify-start text-left"
+                                                    >
+                                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                                        {format(
+                                                            field.value,
+                                                            "PPP"
+                                                        )}
+                                                    </Button>
+                                                </PopoverTrigger>
+                                                <PopoverContent className="w-auto p-0">
+                                                    <Calendar
+                                                        mode="single"
+                                                        selected={field.value}
+                                                        onSelect={(date) =>
+                                                            date &&
+                                                            field.onChange(date)
+                                                        }
+                                                    />
+                                                </PopoverContent>
+                                            </Popover>
+                                        </FormControl>
+                                        <div className="min-h-[20px]">
+                                            <FormMessage />
+                                        </div>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="priority"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Priority</FormLabel>
+                                        <FormControl>
+                                            <Select {...field}>
+                                                <SelectTrigger className="w-full">
+                                                    <SelectValue placeholder="Select priority" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="low">
+                                                        Low
+                                                    </SelectItem>
+                                                    <SelectItem value="medium">
+                                                        Medium
+                                                    </SelectItem>
+                                                    <SelectItem value="high">
+                                                        High
+                                                    </SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </FormControl>
+                                        <div className="min-h-[20px]">
+                                            <FormMessage />
+                                        </div>
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
+                        <Button
+                            type="submit"
+                            disabled={form.formState.isSubmitting}
+                            className="w-full bg-sidebar-accent hover:bg-blue-500 transition-colors duration-200"
+                        >
+                            Add Task
+                        </Button>
+                    </form>
+                </Form>
+                <div className="space-y-4"></div>
             </DialogContent>
         </Dialog>
     );
