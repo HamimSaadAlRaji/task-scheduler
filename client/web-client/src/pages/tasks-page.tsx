@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
     Card,
     CardContent,
@@ -10,13 +9,14 @@ import { Button } from "@/components/ui/button";
 
 import { Trash2Icon, CheckCircleIcon, EditIcon } from "lucide-react";
 import { format } from "date-fns";
-import axios from "axios";
 import AddTaskDialog from "@/components/tasks/add-task-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { axiosInstance } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
 
 interface Task {
-    id: string;
+    _id: string;
     title: string;
     description: string;
     priority: "low" | "medium" | "high";
@@ -25,50 +25,21 @@ interface Task {
 }
 
 export default function TasksPage() {
-    const [tasks, setTasks] = useState<Task[]>([
-        {
-            id: "1",
-            title: "Complete project proposal",
-            description: "Draft and review the Q1 project proposal document",
-            priority: "high",
-            status: "in-progress",
-            dueDate: new Date("2025-01-15"),
-        },
-        {
-            id: "2",
-            title: "Weekly team meeting",
-            description: "Discuss project progress and next steps",
-            priority: "medium",
-            status: "todo",
-            dueDate: new Date("2025-01-16"),
-        },
-    ]);
-
-    const updateTaskStatus = (id: string, status: Task["status"]) => {
-        setTasks(
-            tasks.map((task) => (task.id === id ? { ...task, status } : task))
-        );
+    const fetchTasks = async (): Promise<Task[]> => {
+        const resp = await axiosInstance.get("/tasks");
+        return resp.data;
     };
 
-    const deleteTask = (id: string) => {
-        setTasks(tasks.filter((task) => task.id !== id));
-    };
+    const { data: tasks } = useQuery({
+        queryFn: fetchTasks,
+        queryKey: ["tasks"],
+    });
 
     const priorityColors = {
         high: "text-red-500 bg-red-100",
         medium: "text-yellow-500 bg-yellow-100",
         low: "text-green-600 bg-green-100",
     };
-
-    const fetchTasks = async () => {
-        const url = import.meta.env.VITE_BACKEND_BASE_URL + "/tasks";
-        const resp = await axios.get(url);
-        setTasks(resp.data);
-    };
-
-    useEffect(() => {
-        fetchTasks();
-    }, []);
 
     return (
         <div className="p-10">
@@ -85,9 +56,9 @@ export default function TasksPage() {
                 <TabsContent value="todo">
                     <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
                         {tasks
-                            .filter((task) => task.status === "todo")
+                            ?.filter((task) => task.status === "todo")
                             .map((task) => (
-                                <Card key={task.id} className="mb-4">
+                                <Card key={task._id} className="mb-4">
                                     <CardHeader className="flex flex-row items-start justify-between pb-2">
                                         <div className="flex items-center">
                                             <CardTitle className="text-base font-medium">
@@ -118,12 +89,12 @@ export default function TasksPage() {
                                         <div className="flex space-x-2 mt-4">
                                             <Button
                                                 size="sm"
-                                                onClick={() =>
-                                                    updateTaskStatus(
-                                                        task.id,
-                                                        "completed"
-                                                    )
-                                                }
+                                                // onClick={() =>
+                                                //     updateTaskStatus(
+                                                //         task._id,
+                                                //         "completed"
+                                                //     )
+                                                // }
                                                 className="flex-1 text-white bg-blue-600 hover:bg-blue-500 transition-colors duration-200"
                                             >
                                                 Mark As Done
@@ -134,9 +105,9 @@ export default function TasksPage() {
                                             <Button
                                                 size="sm"
                                                 variant="outline"
-                                                onClick={() =>
-                                                    deleteTask(task.id)
-                                                }
+                                                // onClick={() =>
+                                                //     deleteTask(task._id)
+                                                // }
                                             >
                                                 <Trash2Icon className="w-4 h-4" />
                                             </Button>
@@ -149,10 +120,10 @@ export default function TasksPage() {
                 <TabsContent value="completed">
                     <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
                         {tasks
-                            .filter((task) => task.status === "completed")
+                            ?.filter((task) => task.status === "completed")
                             .map((task) => (
                                 <Card
-                                    key={task.id}
+                                    key={task._id}
                                     className="mb-4 border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20"
                                 >
                                     <CardHeader className="flex flex-row items-start justify-between pb-2">
@@ -186,12 +157,12 @@ export default function TasksPage() {
                                         <div className="flex space-x-2 mt-4">
                                             <Button
                                                 size="sm"
-                                                onClick={() =>
-                                                    updateTaskStatus(
-                                                        task.id,
-                                                        "todo"
-                                                    )
-                                                }
+                                                // onClick={() =>
+                                                //     updateTaskStatus(
+                                                //         task._id,
+                                                //         "todo"
+                                                //     )
+                                                // }
                                                 className="flex-1 text-white bg-blue-600 hover:bg-blue-500 transition-colors duration-200"
                                             >
                                                 Mark As To Do
@@ -202,9 +173,9 @@ export default function TasksPage() {
                                             <Button
                                                 size="sm"
                                                 variant="outline"
-                                                onClick={() =>
-                                                    deleteTask(task.id)
-                                                }
+                                                // onClick={() =>
+                                                //     deleteTask(task._id)
+                                                // }
                                             >
                                                 <Trash2Icon className="w-4 h-4" />
                                             </Button>
