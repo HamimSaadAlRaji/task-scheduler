@@ -1,13 +1,14 @@
 import { createBrowserRouter } from "react-router";
-import App from "@/App";
+import Dashboard from "@/components/dashboard";
 import TasksPage from "@/pages/tasks-page";
 import HomePage from "@/pages/home-page";
 import CalendarPage from "@/pages/calendar-page";
+import LoginPage from "@/pages/login-page";
 
 export const appRouter = createBrowserRouter([
     {
         path: "/",
-        element: <App />,
+        element: <Dashboard />,
         children: [
             {
                 index: true,
@@ -22,5 +23,9 @@ export const appRouter = createBrowserRouter([
                 element: <CalendarPage />,
             },
         ],
+    },
+    {
+        path: "/auth",
+        element: <LoginPage />,
     },
 ]);
