@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export default function SignUpPage() {
     const formSchema = z.object({
@@ -48,11 +49,14 @@ export default function SignUpPage() {
             const resp = await axiosInstance.post("/users/register", user);
             if (resp.status === 201) {
                 navigate("/login");
+                toast.success("User registered successfully");
             } else {
                 console.error("Error registering user:", resp.data);
+                toast.error("Error registering user");
             }
         } catch (error) {
             console.error("Error registering user:", error);
+            toast.error("Error registering user");
         }
     };
 

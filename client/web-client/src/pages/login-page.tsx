@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { axiosInstance } from "@/lib/utils";
 import { useContext, useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router";
+import { toast } from "sonner";
 
 export default function LoginPage() {
     const { isAuth, setIsAuth, setUser } = useContext(AuthContext);
@@ -42,13 +43,16 @@ export default function LoginPage() {
             });
             if (resp.status === 201) {
                 login();
+                toast.success("Login successful");
             } else {
                 console.log("Login failed:", resp.data);
                 setIsError(true);
+                toast.error("Login failed");
             }
         } catch (error) {
             console.error("Login failed:", error);
             setIsError(true);
+            toast.error("Login failed");
             return;
         }
     }
