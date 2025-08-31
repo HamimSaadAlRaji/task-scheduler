@@ -221,7 +221,6 @@ export default function AddTaskDialog() {
                         </Button>
                     </form>
                 </Form>
-                <div className="space-y-4"></div>
             </DialogContent>
         </Dialog>
     );
