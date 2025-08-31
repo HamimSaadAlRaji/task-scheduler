@@ -25,7 +25,7 @@ export const appRouter = createBrowserRouter([
         ],
     },
     {
-        path: "/auth",
+        path: "/login",
         element: <LoginPage />,
     },
 ]);
