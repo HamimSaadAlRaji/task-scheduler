@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { axiosInstance } from "@/lib/utils";
 import { useContext, useState } from "react";
-import { Navigate, useNavigate } from "react-router";
+import { Link, Navigate, useNavigate } from "react-router";
 
 export default function LoginPage() {
     const { isAuth, setIsAuth, setUser } = useContext(AuthContext);
@@ -118,12 +118,12 @@ export default function LoginPage() {
                                 </div>
                                 <div className="mt-4 text-center text-sm">
                                     Don&apos;t have an account?{" "}
-                                    <a
-                                        href="#"
+                                    <Link
+                                        to="/signup"
                                         className="underline underline-offset-4"
                                     >
                                         Sign up
-                                    </a>
+                                    </Link>
                                 </div>
                             </form>
                         </CardContent>

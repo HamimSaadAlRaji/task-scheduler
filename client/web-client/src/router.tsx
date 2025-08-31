@@ -4,6 +4,7 @@ import TasksPage from "@/pages/tasks-page";
 import HomePage from "@/pages/home-page";
 import CalendarPage from "@/pages/calendar-page";
 import LoginPage from "@/pages/login-page";
+import SignUpPage from "@/pages/signup-page";
 
 export const appRouter = createBrowserRouter([
     {
@@ -27,5 +28,9 @@ export const appRouter = createBrowserRouter([
     {
         path: "/login",
         element: <LoginPage />,
+    },
+    {
+        path: "/signup",
+        element: <SignUpPage />,
     },
 ]);
