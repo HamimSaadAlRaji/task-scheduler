@@ -108,7 +108,7 @@ const CalendarPage = () => {
         if (!selectedDate || !task.dueDate) return false;
         const taskDate = new Date(task.dueDate).toDateString();
         return taskDate === selectedDate.toDateString();
-      });
+    });
 
     return (
         <div className="p-10">
@@ -127,9 +127,14 @@ const CalendarPage = () => {
                     {/* Calendar */}
                     <Card className="">
                         <CardHeader>
-                            <CardTitle>Calendar</CardTitle>
+                            <CardTitle>
+                                Events & Tasks for{" "}
+                                {selectedDate
+                                    ? format(selectedDate, "MMMM dd, yyyy")
+                                    : "Today"}
+                            </CardTitle>
                             <CardDescription>
-                                Select a date to view events
+                                Your scheduled events and due tasks
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
