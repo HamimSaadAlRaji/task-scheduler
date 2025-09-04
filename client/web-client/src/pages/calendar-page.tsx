@@ -1,3 +1,10 @@
+// Add these imports to your CalendarPage
+import { useQuery } from "@tanstack/react-query";
+import { axiosInstance } from "@/lib/utils";
+import type { Task } from "@/lib/types";
+import { CheckCircleIcon, ClipboardListIcon } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import TaskCard from "@/components/tasks/task-card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
