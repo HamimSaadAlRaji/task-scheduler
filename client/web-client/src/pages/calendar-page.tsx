@@ -45,6 +45,16 @@ const CalendarPage = () => {
         new Date()
     );
 
+    const fetchTasks = async (): Promise<Task[]> => {
+        const resp = await axiosInstance.get("/tasks");
+        return resp.data;
+    };
+
+    const { data: tasks } = useQuery({
+        queryFn: fetchTasks,
+        queryKey: ["tasks"],
+    });
+
     const [events, setEvents] = useState<Event[]>([
         {
             id: "1",
@@ -150,9 +160,9 @@ const CalendarPage = () => {
                                         <Button
                                             variant="outline"
                                             className="mt-4"
-                                            // onClick={() =>
-                                            //     setIsDialogOpen(true)
-                                            // }
+                                        // onClick={() =>
+                                        //     setIsDialogOpen(true)
+                                        // }
                                         >
                                             <Plus className="w-4 h-4 mr-2" />
                                             Add Event
@@ -165,9 +175,8 @@ const CalendarPage = () => {
                                             className="flex items-start space-x-4 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                                         >
                                             <div
-                                                className={`w-3 h-3 rounded-full ${
-                                                    typeColors[event.type]
-                                                } mt-2`}
+                                                className={`w-3 h-3 rounded-full ${typeColors[event.type]
+                                                    } mt-2`}
                                             />
                                             <div className="flex-1">
                                                 <div className="flex items-center space-x-2 mb-1">
@@ -207,7 +216,7 @@ const CalendarPage = () => {
                                                     )}
                                                     {event.attendees &&
                                                         event.attendees.length >
-                                                            0 && (
+                                                        0 && (
                                                             <div className="flex items-center">
                                                                 <Users className="w-4 h-4 mr-1" />
                                                                 {
