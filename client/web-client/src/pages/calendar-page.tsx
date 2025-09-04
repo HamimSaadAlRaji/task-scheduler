@@ -267,94 +267,14 @@ const CalendarPage = () => {
                                 )}
 
                                 {/* Tasks Display - ADDED HERE */}
+                                {/* Tasks Display - Using your TaskCard with adjusted layout */}
                                 {todaysTasks && todaysTasks.length > 0 && (
                                     <div className="mt-8">
                                         <h4 className="font-semibold mb-4 text-lg">Tasks Due Today</h4>
-                                        <div className="space-y-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             {todaysTasks.map((task) => (
-                                                <div key={task._id} className="p-4 border rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                                                    {/* Task Header */}
-                                                    <div className="flex items-start justify-between mb-3">
-                                                        <div className="flex items-center space-x-2">
-                                                            <h3 className="font-medium text-base">{task.title}</h3>
-                                                            <Badge variant={task.status === "completed" ? "secondary" : "default"} className="capitalize">
-                                                                {task.status}
-                                                            </Badge>
-                                                            {task.priority && (
-                                                                <Badge variant={
-                                                                    task.priority === "high" ? "destructive" :
-                                                                        task.priority === "medium" ? "default" : "secondary"
-                                                                }>
-                                                                    {task.priority} priority
-                                                                </Badge>
-                                                            )}
-                                                        </div>
-                                                        {task.dueDate && (
-                                                            <div className="flex items-center text-sm text-gray-500">
-                                                                <Clock className="w-4 h-4 mr-1" />
-                                                                {format(new Date(task.dueDate), "h:mm a")}
-                                                            </div>
-                                                        )}
-                                                    </div>
-
-                                                    {/* Task Description */}
-                                                    {task.description && (
-                                                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                                                            {task.description}
-                                                        </p>
-                                                    )}
-
-                                                    {/* Task Metadata */}
-                                                    <div className="flex items-center space-x-4 text-sm text-gray-500">
-                                                        {/* Project/Category */}
-                                                        {task.project && (
-                                                            <div className="flex items-center">
-                                                                <div className="w-2 h-2 rounded-full bg-blue-500 mr-1"></div>
-                                                                {task.project}
-                                                            </div>
-                                                        )}
-
-                                                        {/* Estimated Time */}
-                                                        {task.estimatedTime && (
-                                                            <div className="flex items-center">
-                                                                <Clock className="w-4 h-4 mr-1" />
-                                                                {task.estimatedTime} min
-                                                            </div>
-                                                        )}
-
-                                                        {/* Assignee */}
-                                                        {task.assignee && (
-                                                            <div className="flex items-center">
-                                                                <Users className="w-4 h-4 mr-1" />
-                                                                {task.assignee}
-                                                            </div>
-                                                        )}
-
-                                                        {/* Tags */}
-                                                        {task.tags && task.tags.length > 0 && (
-                                                            <div className="flex items-center">
-                                                                <div className="w-4 h-4 mr-1">🏷️</div>
-                                                                {task.tags.slice(0, 2).join(", ")}
-                                                                {task.tags.length > 2 && ` +${task.tags.length - 2}`}
-                                                            </div>
-                                                        )}
-                                                    </div>
-
-                                                    {/* Task Actions */}
-                                                    <div className="flex space-x-2 mt-3 pt-3 border-t">
-                                                        <Button size="sm" variant="outline" className="text-xs">
-                                                            <CheckCircleIcon className="w-4 h-4 mr-1" />
-                                                            Complete
-                                                        </Button>
-                                                        <Button size="sm" variant="outline" className="text-xs">
-                                                            <CalendarIcon className="w-4 h-4 mr-1" />
-                                                            Reschedule
-                                                        </Button>
-                                                        <Button size="sm" variant="outline" className="text-xs">
-                                                            <Bell className="w-4 h-4 mr-1" />
-                                                            Remind
-                                                        </Button>
-                                                    </div>
+                                                <div key={task._id} className="scale-95 transform">
+                                                    <TaskCard task={task} />
                                                 </div>
                                             ))}
                                         </div>
