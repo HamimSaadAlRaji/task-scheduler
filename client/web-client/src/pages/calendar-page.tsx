@@ -144,6 +144,28 @@ const CalendarPage = () => {
                                 onSelect={setSelectedDate}
                                 className="rounded-md border"
                             />
+                            {todaysTasks && todaysTasks.length > 0 && (
+                                <div className="mt-6">
+                                    <h4 className="font-semibold mb-3">Tasks Due Today</h4>
+                                    <div className="space-y-3">
+                                        {todaysTasks.map((task) => (
+                                            <div key={task._id} className="p-3 border rounded-lg bg-gray-50 dark:bg-gray-800">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="font-medium">{task.title}</span>
+                                                    <Badge variant={task.status === "completed" ? "secondary" : "default"}>
+                                                        {task.status}
+                                                    </Badge>
+                                                </div>
+                                                {task.description && (
+                                                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                                        {task.description}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
 
