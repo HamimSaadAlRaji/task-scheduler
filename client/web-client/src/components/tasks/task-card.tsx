@@ -21,6 +21,7 @@ export default function TaskCard({ task }: { task: Task }) {
         low: "text-green-600 bg-green-100",
     };
     const isDone = task.status === "completed";
+    const isPending = task.status === "pending";
 
     async function updateStatus() {
         return await axiosInstance.put("/tasks/" + task._id, {
@@ -41,20 +42,20 @@ export default function TaskCard({ task }: { task: Task }) {
     return (
         <Card
             key={task._id}
-            className={`mb-4${
-                isDone
+            className={`mb-4${isDone
                     ? " border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20"
-                    : ""
-            }`}
+                    : isPending
+                        ? " border-orange-200 dark:border-orange-800 bg-orange-50 dark:bg-orange-900/20"
+                        : ""
+                }`}
         >
             <CardHeader className="flex flex-row items-start justify-between pb-2">
                 <div className="flex items-center">
                     <CardTitle
-                        className={`flex items-center text-base font-medium${
-                            isDone
+                        className={`flex items-center text-base font-medium${isDone
                                 ? " line-through text-gray-600 dark:text-gray-400"
                                 : ""
-                        }`}
+                            }`}
                     >
                         {task.title}
                     </CardTitle>
@@ -68,9 +69,8 @@ export default function TaskCard({ task }: { task: Task }) {
             </CardHeader>
             <CardContent className="space-y-2">
                 <CardDescription
-                    className={`min-h-10 text-sm text-gray-600 dark:text-gray-400${
-                        isDone ? " line-through" : ""
-                    } break-words whitespace-pre-line`}
+                    className={`min-h-10 text-sm text-gray-600 dark:text-gray-400${isDone ? " line-through" : ""
+                        } break-words whitespace-pre-line`}
                 >
                     {task.description.length > 125
                         ? `${task.description.slice(0, 125)} ...`
