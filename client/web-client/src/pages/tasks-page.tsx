@@ -1,4 +1,4 @@
-import { CheckCircleIcon, ClipboardListIcon, ClockIcon } from "lucide-react";import AddTaskDialog from "@/components/tasks/add-task-dialog";
+import { CheckCircleIcon, ClipboardListIcon, ClockIcon } from "lucide-react"; import AddTaskDialog from "@/components/tasks/add-task-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { axiosInstance } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -28,6 +28,10 @@ export default function TasksPage() {
                     <TabsTrigger value="todo">
                         <ClipboardListIcon className="w-4 h-4 text-blue-500" />
                         <span>To Do</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="pending">
+                        <ClockIcon className="w-4 h-4 text-orange-500" />
+                        <span>Pending</span>
                     </TabsTrigger>
                     <TabsTrigger value="completed">
                         <CheckCircleIcon className="w-4 h-4 text-green-500" />
