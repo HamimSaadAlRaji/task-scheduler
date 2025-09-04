@@ -2,8 +2,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "@/lib/utils";
 import type { Task } from "@/lib/types";
-import { CheckCircleIcon, ClipboardListIcon } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TaskCard from "@/components/tasks/task-card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -271,7 +269,7 @@ const CalendarPage = () => {
                                 {todaysTasks && todaysTasks.length > 0 && (
                                     <div className="mt-8">
                                         <h4 className="font-semibold mb-4 text-lg">Tasks Due Today</h4>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
                                             {todaysTasks.map((task) => (
                                                 <div key={task._id} className="scale-95 transform">
                                                     <TaskCard task={task} />
