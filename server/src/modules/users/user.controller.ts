@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import * as userService from "./user.service";
+import { Task } from "../tasks/task.model";
+import { Event } from "../events/event.model";
 
 export const registerUser = async (
   req: Request,
@@ -56,6 +58,18 @@ export const logoutUser = async (
     };
     res.clearCookie("accessToken", options);
     res.status(200).json({ message: "Logout successful" });
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+};
+
+export const getUserStats = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.id || req.user?._id;
+    if (!userId) return res.status(400).json({ message: "User ID required" });
+
+    // Task stats
+    });
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }
