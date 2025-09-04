@@ -47,6 +47,15 @@ export default function TasksPage() {
                             ))}
                     </div>
                 </TabsContent>
+                <TabsContent value="pending">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
+                        {tasks
+                            ?.filter((task) => task.status === "pending")
+                            .map((task) => (
+                                <TaskCard key={task._id} task={task} />
+                            ))}
+                    </div>
+                </TabsContent>
                 <TabsContent value="completed">
                     <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
                         {tasks
