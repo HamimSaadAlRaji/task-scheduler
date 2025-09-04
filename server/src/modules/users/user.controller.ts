@@ -69,6 +69,37 @@ export const getUserStats = async (req: Request, res: Response) => {
     if (!userId) return res.status(400).json({ message: "User ID required" });
 
     // Task stats
+    const [totalTasks, completedTasks, pendingTasks, overdueTasks, highPriority, mediumPriority, lowPriority] = await Promise.all([
+      Task.countDocuments({ createdBy: userId }),
+      Task.countDocuments({ createdBy: userId, status: "completed" }),
+      Task.countDocuments({ createdBy: userId, status: { $ne: "completed" } }),
+      Task.countDocuments({ createdBy: userId, dueDate: { $lt: new Date() }, status: { $ne: "completed" } }),
+      Task.countDocuments({ createdBy: userId, priority: "high" }),
+      Task.countDocuments({ createdBy: userId, priority: "medium" }),
+      Task.countDocuments({ createdBy: userId, priority: "low" }),
+    ]);
+
+    // Event stats
+    const totalEvents = await Event.countDocuments({ createdBy: userId });
+    const last30Days = new Date();
+    last30Days.setDate(last30Days.getDate() - 30);
+    const eventsLast30Days = await Event.countDocuments({
+      createdBy: userId,
+      startDate: { $gte: last30Days }
+    });
+
+    res.json({
+      totalTasks,
+      completedTasks,
+      pendingTasks,
+      overdueTasks,
+      tasksByPriority: {
+        high: highPriority,
+        medium: mediumPriority,
+        low: lowPriority,
+      },
+      totalEvents,
+      eventsLast30Days,
     });
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
