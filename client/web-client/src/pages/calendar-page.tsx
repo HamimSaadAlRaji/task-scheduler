@@ -104,6 +104,12 @@ const CalendarPage = () => {
             (selectedDate || new Date()).toDateString()
     );
 
+    const todaysTasks = tasks?.filter((task) => {
+        if (!selectedDate || !task.dueDate) return false;
+        const taskDate = new Date(task.dueDate).toDateString();
+        return taskDate === selectedDate.toDateString();
+      });
+
     return (
         <div className="p-10">
             <div className="flex items-center justify-between mb-8">
