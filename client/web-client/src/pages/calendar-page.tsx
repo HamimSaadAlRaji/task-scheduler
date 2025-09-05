@@ -1,3 +1,7 @@
+import { useQuery } from "@tanstack/react-query";
+import { axiosInstance } from "@/lib/utils";
+import type { Task } from "@/lib/types";
+import TaskCard from "@/components/tasks/task-card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
@@ -37,6 +41,16 @@ const CalendarPage = () => {
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(
         new Date()
     );
+
+    const fetchTasks = async (): Promise<Task[]> => {
+        const resp = await axiosInstance.get("/tasks");
+        return resp.data;
+    };
+
+    const { data: tasks } = useQuery({
+        queryFn: fetchTasks,
+        queryKey: ["tasks"],
+    });
 
     const [events, setEvents] = useState<Event[]>([
         {
@@ -87,6 +101,12 @@ const CalendarPage = () => {
             (selectedDate || new Date()).toDateString()
     );
 
+    const todaysTasks = tasks?.filter((task) => {
+        if (!selectedDate || !task.dueDate) return false;
+        const taskDate = new Date(task.dueDate).toDateString();
+        return taskDate === selectedDate.toDateString();
+    });
+
     return (
         <div className="p-10">
             <div className="flex items-center justify-between mb-8">
@@ -104,9 +124,14 @@ const CalendarPage = () => {
                     {/* Calendar */}
                     <Card className="">
                         <CardHeader>
-                            <CardTitle>Calendar</CardTitle>
+                            <CardTitle>
+                                Events & Tasks for{" "}
+                                {selectedDate
+                                    ? format(selectedDate, "MMMM dd, yyyy")
+                                    : "Today"}
+                            </CardTitle>
                             <CardDescription>
-                                Select a date to view events
+                                Your scheduled events and due tasks
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -116,6 +141,14 @@ const CalendarPage = () => {
                                 onSelect={setSelectedDate}
                                 className="rounded-md border"
                             />
+                            {todaysTasks && todaysTasks.length > 0 && (
+                                <div className="mt-6">
+                                    <h4 className="font-semibold mb-3">Tasks Due Today</h4>
+                                    <div className="space-y-3">
+
+                                    </div>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
 
@@ -123,13 +156,13 @@ const CalendarPage = () => {
                     <Card className="flex-1">
                         <CardHeader>
                             <CardTitle>
-                                Events for{" "}
+                                Events & Tasks for{" "}
                                 {selectedDate
                                     ? format(selectedDate, "MMMM dd, yyyy")
                                     : "Today"}
                             </CardTitle>
                             <CardDescription>
-                                Your scheduled events and activities
+                                Your scheduled events and due tasks
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -143,9 +176,9 @@ const CalendarPage = () => {
                                         <Button
                                             variant="outline"
                                             className="mt-4"
-                                            // onClick={() =>
-                                            //     setIsDialogOpen(true)
-                                            // }
+                                        // onClick={() =>
+                                        //     setIsDialogOpen(true)
+                                        // }
                                         >
                                             <Plus className="w-4 h-4 mr-2" />
                                             Add Event
@@ -158,9 +191,8 @@ const CalendarPage = () => {
                                             className="flex items-start space-x-4 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                                         >
                                             <div
-                                                className={`w-3 h-3 rounded-full ${
-                                                    typeColors[event.type]
-                                                } mt-2`}
+                                                className={`w-3 h-3 rounded-full ${typeColors[event.type]
+                                                    } mt-2`}
                                             />
                                             <div className="flex-1">
                                                 <div className="flex items-center space-x-2 mb-1">
@@ -200,7 +232,7 @@ const CalendarPage = () => {
                                                     )}
                                                     {event.attendees &&
                                                         event.attendees.length >
-                                                            0 && (
+                                                        0 && (
                                                             <div className="flex items-center">
                                                                 <Users className="w-4 h-4 mr-1" />
                                                                 {
@@ -229,6 +261,21 @@ const CalendarPage = () => {
                                             </div>
                                         </div>
                                     ))
+                                )}
+
+                                {/* Tasks Display - ADDED HERE */}
+                                {/* Tasks Display - Using your TaskCard with adjusted layout */}
+                                {todaysTasks && todaysTasks.length > 0 && (
+                                    <div className="mt-8">
+                                        <h4 className="font-semibold mb-4 text-lg">Tasks Due Today</h4>
+                                        <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+                                            {todaysTasks.map((task) => (
+                                                <div key={task._id} className="scale-95 transform">
+                                                    <TaskCard task={task} />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
                                 )}
                             </div>
                         </CardContent>
