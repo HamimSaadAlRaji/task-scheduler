@@ -17,6 +17,24 @@ export default function HomePage() {
         }
         fetchStats();
     }, [user]);
+
+    function downloadPDF() {
+        if (!stats) return;
+        const doc = new jsPDF();
+        doc.text("User Statistics (Last 30 Days)", 10, 10);
+        doc.text(`Total Tasks: ${stats.totalTasks}`, 10, 20);
+        doc.text(`Completed Tasks: ${stats.completedTasks}`, 10, 30);
+        doc.text(`Pending Tasks: ${stats.pendingTasks}`, 10, 40);
+        doc.text(`Overdue Tasks: ${stats.overdueTasks}`, 10, 50);
+        doc.text(`Tasks by Priority:`, 10, 60);
+        doc.text(`  High: ${stats.tasksByPriority.high}`, 15, 70);
+        doc.text(`  Medium: ${stats.tasksByPriority.medium}`, 15, 80);
+        doc.text(`  Low: ${stats.tasksByPriority.low}`, 15, 90);
+        doc.text(`Total Events: ${stats.totalEvents}`, 10, 100);
+        doc.text(`Events in Last 30 Days: ${stats.eventsLast30Days}`, 10, 110);
+        doc.save("user-stats.pdf");
+    }
+
     return (
         <div className="p-4">
             <h1 className="text-2xl font-bold">Home Page</h1>
@@ -40,7 +58,7 @@ export default function HomePage() {
                         <li>Total Events: {stats.totalEvents}</li>
                         <li>Events in Last 30 Days: {stats.eventsLast30Days}</li>
                     </ul>
-                    <Button className="mt-4" onClick={}>
+                    <Button className="mt-4" onClick={downloadPDF}>
                         Download PDF (Last 30 Days)
                     </Button>
                 </div>
