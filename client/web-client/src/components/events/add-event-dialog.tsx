@@ -85,7 +85,6 @@ export default function AddEventDialog() {
     return await axiosInstance.post("/events/create-event", {
       ...eventData,
       attendees: attendeesArray,
-      createdBy: "66e7cb4c34ae21dc16a5bc69", // This should come from auth context
       tasks: [],
     });
   };
