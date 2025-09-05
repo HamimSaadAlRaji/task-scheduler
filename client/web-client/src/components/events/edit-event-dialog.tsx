@@ -27,12 +27,17 @@ import {
 } from "@/components/ui/popover";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, PlusIcon } from "lucide-react";
+import { CalendarIcon, EditIcon } from "lucide-react";
 import { format } from "date-fns";
 import { axiosInstance } from "@/lib/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { Event } from "@/lib/types";
 
-export default function AddEventDialog() {
+interface EditEventDialogProps {
+  event: Event;
+}
+
+export default function EditEventDialog({ event }: EditEventDialogProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const formSchema = z
@@ -47,54 +52,45 @@ export default function AddEventDialog() {
       path: ["endDate"],
     });
 
-  const defaultValues = {
-    title: "",
-    description: "",
-    startDate: new Date(),
-    endDate: new Date(new Date().getTime() + 60 * 60 * 1000), // 1 hour later
-  };
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues,
+    defaultValues: {
+      title: event.title,
+      description: event.description,
+      startDate: new Date(event.startDate),
+      endDate: new Date(event.endDate),
+    },
   });
 
-  const addEvent = async (event: z.infer<typeof formSchema>) => {
-    return await axiosInstance.post("/events/create-event", {
-      ...event,
-      createdBy: "66e7cb4c34ae21dc16a5bc69", // This should come from auth context
-      tasks: [],
-    });
+  const updateEvent = async (eventData: z.infer<typeof formSchema>) => {
+    return await axiosInstance.put(`/events/${event._id}`, eventData);
   };
 
   const queryClient = useQueryClient();
 
   const { mutateAsync } = useMutation({
-    mutationFn: addEvent,
+    mutationFn: updateEvent,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["events"] });
-      form.reset(defaultValues);
       setIsDialogOpen(false);
     },
     onError: (error) => {
-      console.error("Error adding event:", error);
+      console.error("Error updating event:", error);
     },
   });
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-sidebar-accent hover:bg-blue-500 transition-colors duration-200">
-          <PlusIcon className="w-4 h-4 mr-2" />
-          Add New Event
+        <Button variant="outline" size="sm">
+          <EditIcon className="w-4 h-4 mr-1" />
+          Edit
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Add New Event</DialogTitle>
-          <DialogDescription>
-            Create a new event for your schedule
-          </DialogDescription>
+          <DialogTitle>Edit Event</DialogTitle>
+          <DialogDescription>Update the event details</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit((values) => mutateAsync(values))}>
@@ -205,7 +201,7 @@ export default function AddEventDialog() {
               disabled={form.formState.isSubmitting}
               className="w-full bg-sidebar-accent hover:bg-blue-500 transition-colors duration-200 mt-4"
             >
-              Add Event
+              Update Event
             </Button>
           </form>
         </Form>
