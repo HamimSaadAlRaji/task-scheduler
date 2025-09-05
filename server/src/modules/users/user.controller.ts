@@ -67,6 +67,7 @@ export const getUserStats = async (req: Request, res: Response) => {
   try {
     const userId = req.params.id || req.user?._id;
     if (!userId) return res.status(400).json({ message: "User ID required" });
+    Console.log(userId);
 
     // Task stats
     const [totalTasks, completedTasks, pendingTasks, overdueTasks, highPriority, mediumPriority, lowPriority] = await Promise.all([
