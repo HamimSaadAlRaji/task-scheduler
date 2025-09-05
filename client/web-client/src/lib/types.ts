@@ -18,4 +18,9 @@ export interface Event {
     username: string;
   };
   tasks: Task[];
+  location?: string;
+  attendees?: string[];
+  meetingLink?: string;
+  notificationSent?: boolean;
+  type?: "meeting" | "focus" | "break" | "personal";
 }

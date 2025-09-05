@@ -19,6 +19,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -41,6 +48,10 @@ export default function AddEventDialog() {
       description: z.string().min(1, { message: "Description is required" }),
       startDate: z.date(),
       endDate: z.date(),
+      location: z.string().optional(),
+      attendees: z.string().optional(),
+      meetingLink: z.string().url().optional().or(z.literal("")),
+      type: z.enum(["meeting", "focus", "break", "personal"]).optional(),
     })
     .refine((data) => data.endDate >= data.startDate, {
       message: "End date must be after start date",
@@ -52,6 +63,10 @@ export default function AddEventDialog() {
     description: "",
     startDate: new Date(),
     endDate: new Date(new Date().getTime() + 60 * 60 * 1000), // 1 hour later
+    location: "",
+    attendees: "",
+    meetingLink: "",
+    type: "meeting" as const,
   };
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -59,9 +74,17 @@ export default function AddEventDialog() {
     defaultValues,
   });
 
-  const addEvent = async (event: z.infer<typeof formSchema>) => {
+  const addEvent = async (eventData: z.infer<typeof formSchema>) => {
+    const attendeesArray = eventData.attendees
+      ? eventData.attendees
+          .split(",")
+          .map((a) => a.trim())
+          .filter((a) => a)
+      : [];
+
     return await axiosInstance.post("/events/create-event", {
-      ...event,
+      ...eventData,
+      attendees: attendeesArray,
       createdBy: "66e7cb4c34ae21dc16a5bc69", // This should come from auth context
       tasks: [],
     });
@@ -89,7 +112,7 @@ export default function AddEventDialog() {
           Add New Event
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[500px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add New Event</DialogTitle>
           <DialogDescription>
@@ -98,115 +121,188 @@ export default function AddEventDialog() {
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit((values) => mutateAsync(values))}>
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Title</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="Enter event title" />
-                  </FormControl>
-                  <div className="min-h-[20px]">
-                    <FormMessage />
-                  </div>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem className="mt-2">
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      placeholder="Enter event description"
-                    />
-                  </FormControl>
-                  <div className="min-h-[20px]">
-                    <FormMessage />
-                  </div>
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-1 gap-4">
+            <div className="space-y-4">
               <FormField
                 control={form.control}
-                name="startDate"
+                name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Start Date & Time</FormLabel>
+                    <FormLabel>Title</FormLabel>
                     <FormControl>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className="w-full justify-start text-left"
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {format(field.value, "PPP p")}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={(date) => date && field.onChange(date)}
-                          />
-                        </PopoverContent>
-                      </Popover>
+                      <Input {...field} placeholder="Enter event title" />
                     </FormControl>
-                    <div className="min-h-[20px]">
-                      <FormMessage />
-                    </div>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
-                name="endDate"
+                name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>End Date & Time</FormLabel>
+                    <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className="w-full justify-start text-left"
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {format(field.value, "PPP p")}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={(date) => date && field.onChange(date)}
-                          />
-                        </PopoverContent>
-                      </Popover>
+                      <Textarea
+                        {...field}
+                        placeholder="Enter event description"
+                      />
                     </FormControl>
-                    <div className="min-h-[20px]">
-                      <FormMessage />
-                    </div>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="startDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Start Date & Time</FormLabel>
+                      <FormControl>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className="w-full justify-start text-left"
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {format(field.value, "PPP p")}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={(date) => date && field.onChange(date)}
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="endDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>End Date & Time</FormLabel>
+                      <FormControl>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className="w-full justify-start text-left"
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {format(field.value, "PPP p")}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={(date) => date && field.onChange(date)}
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Event Type</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select event type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="meeting">Meeting</SelectItem>
+                          <SelectItem value="focus">Focus Session</SelectItem>
+                          <SelectItem value="break">Break</SelectItem>
+                          <SelectItem value="personal">Personal</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="location"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Location (Optional)</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="Enter meeting location or 'Virtual'"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="meetingLink"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Meeting Link (Optional)</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="https://meet.google.com/..."
+                        type="url"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="attendees"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Attendees (Optional)</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="John Doe, Jane Smith, ..."
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button
+                type="submit"
+                disabled={form.formState.isSubmitting}
+                className="w-full bg-sidebar-accent hover:bg-blue-500 transition-colors duration-200"
+              >
+                {form.formState.isSubmitting ? "Creating..." : "Add Event"}
+              </Button>
             </div>
-
-            <Button
-              type="submit"
-              disabled={form.formState.isSubmitting}
-              className="w-full bg-sidebar-accent hover:bg-blue-500 transition-colors duration-200 mt-4"
-            >
-              Add Event
-            </Button>
           </form>
         </Form>
       </DialogContent>
