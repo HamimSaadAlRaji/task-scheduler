@@ -39,6 +39,7 @@ export default function HomePage() {
         <div className="p-4">
             <h1 className="text-2xl font-bold">Home Page</h1>
             <p>Welcome to the home page!</p>
+            {console.log(stats)}
             {stats && (
                 <div className="mt-6">
                     <h2 className="text-xl font-semibold mb-2">Your Statistics</h2>
