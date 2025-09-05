@@ -5,6 +5,10 @@ export interface Task {
   priority: "low" | "medium" | "high";
   status: "todo" | "pending" | "completed";
   dueDate: Date;
+  createdBy: {
+    _id: string;
+    username: string;
+  };
 }
 
 export interface Event {
